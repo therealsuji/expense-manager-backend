@@ -1,0 +1,13 @@
+.idea
+.vscode
+.idea/
+
+#Build
+bin/
+
+#Dev
+tmp/
+
+# OS generated files #
+######################
+.DS_Store
