@@ -25,7 +25,7 @@ func (server *Server) Start(addr string) error {
 	return server.HttpServer.ListenAndServe()
 }
 
-func CreateStack(xs ...Middleware) Middleware {
+func createStack(xs ...Middleware) Middleware {
 	return func(next http.Handler) http.Handler {
 		for i := len(xs) - 1; i >= 0; i-- {
 			x := xs[i]
@@ -36,6 +36,6 @@ func CreateStack(xs ...Middleware) Middleware {
 	}
 }
 func (server *Server) SetMiddleware(xs ...Middleware) {
-	stack := CreateStack(xs...)
+	stack := createStack(xs...)
 	server.HttpServer.Handler = stack(server.HttpServer.Handler)
 }
