@@ -1,10 +1,8 @@
 package main
 
 import (
+	"expense-manager-backend/core"
 	"expense-manager-backend/middleware"
-	"expense-manager-backend/utils"
-	"flag"
-	"net/http"
 	"os"
 
 	"github.com/rs/zerolog"
@@ -12,35 +10,28 @@ import (
 
 func main() {
 	logger := zerolog.New(os.Stdout)
-	flag.Parse()
 
-	env := utils.Environment{}
-	env.Load()
-	if err := env.Validate(); err != nil {
+	cfg := core.Environment{}
+	cfg.Load()
+	if err := cfg.Validate(); err != nil {
 		logger.Fatal().Msg(err.Error())
 	}
 
-	run(&env)
+	run(&cfg)
 }
 
-func run(e *utils.Environment) {
+func run(cfg *core.Environment) {
 
-	logger := zerolog.New(zerolog.ConsoleWriter{Out: os.Stdout}).With().Timestamp().Logger()
-
-	appLogger := utils.AppLogger{Logger: logger}
+	appLogger := core.NewLogger()
 	middlewareLogger := middleware.MiddlewareLogger{
-		AppLogger: utils.AppLogger{Logger: logger},
+		AppLogger: appLogger,
 	}
 
 	stack := middleware.CreateStack(
 		middlewareLogger.Logging,
 	)
-
-	server := http.Server{
-		Addr:    ":" + e.Port,
-		Handler: stack(loadRoutes(appLogger)),
-	}
-
-	server.ListenAndServe()
-
+	app := core.NewServer(*cfg, appLogger)
+	ConfigureRoutes(app)
+	middleware.SetMiddleware(app, stack)
+	app.Start(cfg.Port)
 }

@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"expense-manager-backend/utils"
+	"expense-manager-backend/core"
 	"fmt"
 	"net/http"
 	"time"
@@ -20,7 +20,7 @@ func (w *wrappedWriter) WriteHeader(statusCode int) {
 }
 
 type MiddlewareLogger struct {
-	utils.AppLogger
+	core.AppLogger
 }
 
 func (a *MiddlewareLogger) Logging(next http.Handler) http.Handler {

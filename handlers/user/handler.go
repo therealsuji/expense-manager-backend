@@ -1,18 +1,17 @@
 package user
 
 import (
-	"expense-manager-backend/utils"
+	"expense-manager-backend/core"
 	"net/http"
 )
 
 type UserHandler struct {
-	utils.ApiHandler
+	*core.ApiHandler
 }
 
 func (h *UserHandler) RegisterRoutes() http.Handler {
 	handler := http.NewServeMux()
-	handler.HandleFunc("GET /users", h.HandleFunc(h.CreateUser))
-
+	h.AddRoute("GET", "/users", h.CreateUser, handler)
 	return handler
 }
 

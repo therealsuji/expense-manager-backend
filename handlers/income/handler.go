@@ -1,18 +1,17 @@
 package income
 
 import (
-	"expense-manager-backend/utils"
+	"expense-manager-backend/core"
 	"net/http"
 )
 
 type IncomeHandler struct {
-	utils.ApiHandler
+	*core.ApiHandler
 }
 
 func (h *IncomeHandler) RegisterRoutes() http.Handler {
 	handler := http.NewServeMux()
-	handler.HandleFunc("GET /income", h.HandleFunc(h.CreateIncome))
-
+	h.AddRoute("GET", "/income", h.CreateIncome, handler)
 	return handler
 }
 

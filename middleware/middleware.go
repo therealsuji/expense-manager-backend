@@ -1,6 +1,9 @@
 package middleware
 
-import "net/http"
+import (
+	"expense-manager-backend/core"
+	"net/http"
+)
 
 type Middleware func(http.Handler) http.Handler
 
@@ -13,4 +16,8 @@ func CreateStack(xs ...Middleware) Middleware {
 
 		return next
 	}
+}
+func SetMiddleware(server *core.Server, xs ...Middleware) {
+	stack := CreateStack(xs...)
+	server.HttpServer.Handler = stack(server.HttpServer.Handler)
 }

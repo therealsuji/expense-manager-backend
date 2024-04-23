@@ -1,9 +1,7 @@
-package utils
+package core
 
 import (
 	"net/http"
-
-	"github.com/rs/zerolog"
 )
 
 type AppError struct {
@@ -14,18 +12,6 @@ func (e AppError) Error() string {
 	return e.message
 }
 
-type AppLogger struct {
-	Logger zerolog.Logger
-}
-
-func (l *AppLogger) Info(msg string) {
-	l.Logger.Info().Msg(msg)
-}
-
-func (l *AppLogger) Error(msg string) {
-	l.Logger.Error().Msg(msg)
-}
-
 type ApiHandler struct {
 	Logger AppLogger
 }
@@ -33,6 +19,16 @@ type ApiHandler struct {
 type apiFunc func(
 	w http.ResponseWriter, r *http.Request,
 ) error
+
+func (h *ApiHandler) AddRoute(
+	method string,
+	path string,
+	fn apiFunc,
+	handler *http.ServeMux,
+) {
+	handler.HandleFunc(method+" "+path, h.HandleFunc(fn))
+	h.Logger.Info("Register route: " + method + " " + path)
+}
 
 func (h *ApiHandler) HandleFunc(
 	f apiFunc,
