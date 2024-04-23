@@ -23,15 +23,9 @@ func main() {
 func run(cfg *core.Environment) {
 
 	appLogger := core.NewLogger()
-	middlewareLogger := middleware.MiddlewareLogger{
-		AppLogger: appLogger,
-	}
-
-	stack := middleware.CreateStack(
-		middlewareLogger.Logging,
-	)
+	middlewareLogger := middleware.NewMiddlewareLogger(appLogger)
 	app := core.NewServer(*cfg, appLogger)
 	ConfigureRoutes(app)
-	middleware.SetMiddleware(app, stack)
+	app.SetMiddleware(middlewareLogger.Logging)
 	app.Start(cfg.Port)
 }
