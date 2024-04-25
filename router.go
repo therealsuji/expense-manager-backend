@@ -7,11 +7,11 @@ import (
 	"net/http"
 )
 
-func ConfigureRoutes(server *core.Server) http.Handler {
+func ConfigureRoutes(server *core.Server) {
 	router := http.NewServeMux()
 	apiv1 := http.NewServeMux()
 
-	commonHandler := core.ApiHandler{Logger: server.AppLogger}
+	commonHandler := core.ApiHandler{Logger: server.AppLogger, Validator: server.Validator}
 	userHandler := user.UserHandler{ApiHandler: &commonHandler}
 	incomeHandler := income.IncomeHandler{ApiHandler: &commonHandler}
 
@@ -20,5 +20,5 @@ func ConfigureRoutes(server *core.Server) http.Handler {
 
 	router.Handle("/api/v1/", http.StripPrefix("/api/v1", apiv1))
 
-	return router
+	server.HttpServer.Handler = router
 }

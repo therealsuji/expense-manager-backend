@@ -1,14 +1,21 @@
 package core
 
 import (
+	database "expense-manager-backend/db"
 	"net/http"
+
+	"github.com/go-playground/validator/v10"
 )
+
+var Validator = validator.New(validator.WithRequiredStructEnabled())
 
 type Middleware func(http.Handler) http.Handler
 type Server struct {
 	Environment Environment
 	HttpServer  http.Server
 	AppLogger   AppLogger
+	Validator   *validator.Validate
+	DB          *database.DB
 }
 
 func NewServer(env Environment, appLogger AppLogger) *Server {
@@ -16,6 +23,8 @@ func NewServer(env Environment, appLogger AppLogger) *Server {
 		Environment: env,
 		HttpServer:  http.Server{},
 		AppLogger:   appLogger,
+		Validator:   Validator,
+		DB:          database.GetDB(),
 	}
 }
 

@@ -1,6 +1,7 @@
 package core
 
 import (
+	"expense-manager-backend/utils"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -21,27 +22,27 @@ type Environment struct {
 
 func (e *Environment) Validate() error {
 	if e.Port == "" {
-		return AppError{"Port is required"}
+		return utils.AppError{Message: "Port is required"}
 	}
 
 	if e.DB.User == "" {
-		return AppError{"DB User is required"}
+		return utils.AppError{Message: "DB User is required"}
 	}
 
 	if e.DB.Password == "" {
-		return AppError{"DB Password is required"}
+		return utils.AppError{Message: "DB Password is required"}
 	}
 
 	if e.DB.Name == "" {
-		return AppError{"DB Name is required"}
+		return utils.AppError{Message: "DB Name is required"}
 	}
 
 	if e.DB.Host == "" {
-		return AppError{"DB Host is required"}
+		return utils.AppError{Message: "DB Host is required"}
 	}
 
 	if e.DB.Port == "" {
-		return AppError{"DB Port is required"}
+		return utils.AppError{Message: "DB Port is required"}
 	}
 
 	return nil
@@ -50,7 +51,7 @@ func (e *Environment) Validate() error {
 func (e *Environment) Load() error {
 	err := godotenv.Load()
 	if err != nil {
-		return AppError{"Error loading .env file"}
+		return utils.AppError{Message: "Error loading .env file"}
 	}
 
 	e.DB.User = os.Getenv("DB_USERNAME")

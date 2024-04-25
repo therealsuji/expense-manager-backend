@@ -1,19 +1,15 @@
 package core
 
 import (
+	"expense-manager-backend/utils"
 	"net/http"
+
+	"github.com/go-playground/validator/v10"
 )
 
-type AppError struct {
-	message string
-}
-
-func (e AppError) Error() string {
-	return e.message
-}
-
 type ApiHandler struct {
-	Logger AppLogger
+	Logger    AppLogger
+	Validator *validator.Validate
 }
 
 type apiFunc func(
@@ -35,7 +31,13 @@ func (h *ApiHandler) HandleFunc(
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := f(w, r); err != nil {
-			h.Logger.Error(err.Error())
+			if e, ok := err.(utils.ApiError); ok {
+				utils.WriteError(w, e, e.Code)
+			}
+
+			if e, ok := err.(utils.AppError); ok {
+				utils.WriteError(w, e, http.StatusInternalServerError)
+			}
 		}
 	}
 }

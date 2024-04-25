@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"time"
-
-	"github.com/rs/zerolog"
 )
 
 type wrappedWriter struct {
@@ -20,16 +18,16 @@ func (w *wrappedWriter) WriteHeader(statusCode int) {
 }
 
 type MiddlewareLogger struct {
-	core.AppLogger
+	*core.AppLogger
 }
 
 func NewMiddlewareLogger(logger core.AppLogger) MiddlewareLogger {
 	return MiddlewareLogger{
-		AppLogger: logger,
+		AppLogger: &logger,
 	}
 }
 
-func (a *MiddlewareLogger) Logging(next http.Handler) http.Handler {
+func (m *MiddlewareLogger) Logging(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 
@@ -37,11 +35,9 @@ func (a *MiddlewareLogger) Logging(next http.Handler) http.Handler {
 			ResponseWriter: w,
 			statusCode:     http.StatusOK,
 		}
-
 		next.ServeHTTP(wrapped, r)
-		zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 
-		a.Info(
+		m.AppLogger.Info(
 			fmt.Sprintf(
 				"%d %s %s %s",
 				wrapped.statusCode, r.Method, r.URL.Path, time.Since(start),

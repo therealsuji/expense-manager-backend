@@ -2,6 +2,8 @@ package user
 
 import (
 	"expense-manager-backend/core"
+	"expense-manager-backend/requests"
+	"expense-manager-backend/utils"
 	"net/http"
 )
 
@@ -11,14 +13,19 @@ type UserHandler struct {
 
 func (h *UserHandler) RegisterRoutes() http.Handler {
 	handler := http.NewServeMux()
-	h.AddRoute("GET", "/users", h.CreateUser, handler)
+	h.AddRoute("POST", "/users", h.CreateUser, handler)
 	return handler
 }
 
 func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) error {
-	h.Logger.Info("Create user")
+	var createUserRequest requests.CreateUserRequest
+	if err := utils.ParseJSON(r, &createUserRequest); err != nil {
+		return utils.BadRequest
+	}
 
-	w.Write([]byte("Create user"))
+	if err := h.Validator.Struct(createUserRequest); err != nil {
+		return utils.BadRequest.UnprocessableEntity(err.Error())
+	}
 
 	return nil
 }
