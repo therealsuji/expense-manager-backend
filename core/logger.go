@@ -6,23 +6,36 @@ import (
 	"github.com/rs/zerolog"
 )
 
-type AppLogger struct {
-	*zerolog.Logger
+type logger interface {
+	Info()
+	Error()
 }
 
-func (l *AppLogger) Info(msg string) {
-	l.Logger.Info().Msg(msg)
+type Logger struct {
+	logger zerolog.Logger
 }
 
-func (l *AppLogger) Error(msg string) {
-	l.Logger.Error().Msg(msg)
+var appLogger Logger
+
+func (l *Logger) Info(msg string) {
+	appLogger.logger.Info().Msg(msg)
 }
 
-func NewLogger() AppLogger {
-	applogger := zerolog.New(zerolog.ConsoleWriter{Out: os.Stdout}).With().Timestamp().Logger()
+func (l *Logger) Error(msg string) {
+	appLogger.logger.Error().Msg(msg)
+}
+
+func InitLogger() Logger {
+	zeroLogger := zerolog.New(zerolog.ConsoleWriter{Out: os.Stdout}).With().Timestamp().Logger()
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 
-	return AppLogger{
-		Logger: &applogger,
+	appLogger = Logger{
+		logger: zeroLogger,
 	}
+
+	return GetLogger()
+}
+
+func GetLogger() Logger {
+	return appLogger
 }

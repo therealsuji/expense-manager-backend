@@ -18,12 +18,12 @@ func (w *wrappedWriter) WriteHeader(statusCode int) {
 }
 
 type MiddlewareLogger struct {
-	*core.AppLogger
+	*core.Logger
 }
 
-func NewMiddlewareLogger(logger core.AppLogger) MiddlewareLogger {
+func NewMiddlewareLogger(logger core.Logger) MiddlewareLogger {
 	return MiddlewareLogger{
-		AppLogger: &logger,
+		Logger: &logger,
 	}
 }
 
@@ -37,7 +37,7 @@ func (m *MiddlewareLogger) Logging(next http.Handler) http.Handler {
 		}
 		next.ServeHTTP(wrapped, r)
 
-		m.AppLogger.Info(
+		m.Logger.Info(
 			fmt.Sprintf(
 				"%d %s %s %s",
 				wrapped.statusCode, r.Method, r.URL.Path, time.Since(start),

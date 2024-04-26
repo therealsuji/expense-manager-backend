@@ -1,6 +1,7 @@
 package core
 
 import (
+	db "expense-manager-backend/db/sqlc"
 	"expense-manager-backend/utils"
 	"net/http"
 
@@ -8,8 +9,17 @@ import (
 )
 
 type ApiHandler struct {
-	Logger    AppLogger
+	Logger    Logger
 	Validator *validator.Validate
+	DB        *db.Queries
+}
+
+func NewApiHandler(logger Logger, validator *validator.Validate, db *db.Queries) ApiHandler {
+	return ApiHandler{
+		Logger:    logger,
+		Validator: validator,
+		DB:        db,
+	}
 }
 
 type apiFunc func(

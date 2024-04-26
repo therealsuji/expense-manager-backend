@@ -1,4 +1,4 @@
-package income
+package handlers
 
 import (
 	"expense-manager-backend/core"

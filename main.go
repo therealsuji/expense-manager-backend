@@ -3,6 +3,7 @@ package main
 import (
 	"expense-manager-backend/core"
 	"expense-manager-backend/middleware"
+	"expense-manager-backend/routes"
 	"os"
 
 	"github.com/rs/zerolog"
@@ -22,10 +23,11 @@ func main() {
 
 func run(cfg *core.Environment) {
 
-	appLogger := core.NewLogger()
+	core.InitLogger()
+	appLogger := core.GetLogger()
 	middlewareLogger := middleware.NewMiddlewareLogger(appLogger)
-	app := core.NewServer(*cfg, appLogger)
-	ConfigureRoutes(app)
+	app := core.NewServer(*cfg)
+	routes.ConfigureRoutes(app)
 	app.SetMiddleware(middlewareLogger.Logging)
 	app.Start(cfg.Port)
 }

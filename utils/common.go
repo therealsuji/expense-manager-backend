@@ -24,6 +24,11 @@ var BadRequest = ApiError{
 	Message: "Bad request",
 }
 
+var InternalServerError = ApiError{
+	Code:    http.StatusInternalServerError,
+	Message: "Internal server error",
+}
+
 func (e ApiError) UnprocessableEntity(message string) ApiError {
 	return ApiError{
 		Code:    http.StatusUnprocessableEntity,

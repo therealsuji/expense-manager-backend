@@ -13,8 +13,8 @@ CREATE TABLE users(
     name TEXT NOT NULL,
     email TEXT NOT NULL,
     password TEXT NOT NULL,
-    created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP
 );
 CREATE TRIGGER update_timestamp_trigger BEFORE UPDATE ON "users" FOR EACH ROW EXECUTE FUNCTION update_timestamp();
 -- +goose StatementEnd

@@ -1,7 +1,8 @@
 package core
 
 import (
-	database "expense-manager-backend/db"
+	db_connection "expense-manager-backend/db"
+	db "expense-manager-backend/db/sqlc"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
@@ -13,23 +14,30 @@ type Middleware func(http.Handler) http.Handler
 type Server struct {
 	Environment Environment
 	HttpServer  http.Server
-	AppLogger   AppLogger
+	Logger      Logger
 	Validator   *validator.Validate
-	DB          *database.DB
+	Queries     *db.Queries
 }
 
-func NewServer(env Environment, appLogger AppLogger) *Server {
+func NewServer(env Environment) *Server {
+	db_connection.Init(
+		env.DB.User,
+		env.DB.Password,
+		env.DB.Host,
+		env.DB.Port,
+		env.DB.Name,
+	)
 	return &Server{
 		Environment: env,
 		HttpServer:  http.Server{},
-		AppLogger:   appLogger,
+		Logger:      GetLogger(),
 		Validator:   Validator,
-		DB:          database.GetDB(),
+		Queries:     db.New(db_connection.GetDB()),
 	}
 }
 
 func (server *Server) Start(addr string) error {
-	server.AppLogger.Info("Server started on port " + addr)
+	server.Logger.Info("Server started on port " + addr)
 	server.HttpServer.Addr = ":" + addr
 	return server.HttpServer.ListenAndServe()
 }

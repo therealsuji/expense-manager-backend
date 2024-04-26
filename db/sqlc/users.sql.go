@@ -56,3 +56,45 @@ func (q *Queries) GetUser(ctx context.Context, id string) (User, error) {
 	)
 	return i, err
 }
+
+const getUserFromEmail = `-- name: GetUserFromEmail :one
+SELECT id, name, email, password, created_at, updated_at FROM users WHERE email = $1
+`
+
+func (q *Queries) GetUserFromEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRow(ctx, getUserFromEmail, email)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Email,
+		&i.Password,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateUser = `-- name: UpdateUser :one
+UPDATE users set name = $2, email = $3 WHERE id = $1 RETURNING id, name, email, password, created_at, updated_at
+`
+
+type UpdateUserParams struct {
+	ID    string
+	Name  string
+	Email string
+}
+
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
+	row := q.db.QueryRow(ctx, updateUser, arg.ID, arg.Name, arg.Email)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Email,
+		&i.Password,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}

@@ -1,4 +1,4 @@
-package database
+package db_connection
 
 import (
 	"context"
@@ -12,22 +12,16 @@ var db *pgxpool.Pool
 
 type DB = pgxpool.Pool
 
-var (
-	database = os.Getenv("DB_DATABASE")
-	password = os.Getenv("DB_PASSWORD")
-	username = os.Getenv("DB_USERNAME")
-	port     = os.Getenv("DB_PORT")
-	host     = os.Getenv("DB_HOST")
-)
-
-func createConnStr() string {
-	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", username, password, host, port, database)
-}
-
 // Use pgxpool for concurrent connections
 // if you have multiple threads working with a DB at the same time, you must use pgxpool
-func Connect() {
-	connStr := createConnStr()
+func Init(
+	username string,
+	password string,
+	host string,
+	port string,
+	database string,
+) {
+	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", username, password, host, port, database)
 
 	var err error
 
